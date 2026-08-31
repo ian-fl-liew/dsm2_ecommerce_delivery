@@ -1,0 +1,12 @@
+version: 2
+
+sources:
+  - name: olist_raw
+    # No `database:` -- defaults to whichever project the active profile targets (your own
+    # personal project, or the submission project in CI). Never hardcode a project here.
+    schema: olist_raw
+    tables:
+      - name: orders
+      - name: order_items
+      - name: order_reviews
+      - name: customers

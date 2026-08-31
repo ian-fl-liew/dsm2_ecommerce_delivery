@@ -1,0 +1,8 @@
+jupyter
+nbclient
+python-dotenv
+pandas
+sqlalchemy
+sqlalchemy-bigquery
+db-dtypes
+google-cloud-bigquery-storage

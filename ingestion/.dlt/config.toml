@@ -1,0 +1,5 @@
+[destination.bigquery]
+location = "US"
+
+[normalize]
+data_writer.disable_compression = false

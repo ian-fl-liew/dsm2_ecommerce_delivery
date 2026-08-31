@@ -1,0 +1,4 @@
+dlt[bigquery]>=1.0.0
+kagglehub
+pandas
+pymongo

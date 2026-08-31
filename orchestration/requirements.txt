@@ -1,0 +1,6 @@
+dagster>=1.8
+dagster-webserver>=1.8
+dagster-dbt>=0.24
+dbt-bigquery
+dlt[bigquery]>=1.0.0
+pymongo

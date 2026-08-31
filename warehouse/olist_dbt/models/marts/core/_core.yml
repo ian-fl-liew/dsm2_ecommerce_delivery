@@ -1,0 +1,41 @@
+version: 2
+
+models:
+  - name: dim_customer
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: dim_date
+    columns:
+      - name: date_key
+        tests:
+          - unique
+          - not_null
+
+  - name: fact_orders
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: customer_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+      - name: delivery_status
+        tests:
+          - accepted_values:
+              arguments:
+                values:
+                  - early
+                  - on_time
+                  - late_1_3_days
+                  - late_4_7_days
+                  - late_8_plus_days
+                  - not_delivered

@@ -1,0 +1,25 @@
+# personal scratch / reference material -- not part of the team setup
+/notes
+
+# local credentials -- see config/credentials.env.example for the template
+config/credentials.env
+
+# dlt
+ingestion/.dlt/secrets.toml
+
+# dbt
+warehouse/olist_dbt/target/
+warehouse/olist_dbt/dbt_packages/
+warehouse/olist_dbt/logs/
+warehouse/olist_dbt/profiles.yml
+
+# downloaded Kaggle data
+data/raw/
+
+# notebooks checkpoints
+.ipynb_checkpoints/
+
+# python
+__pycache__/
+*.pyc
+.venv/

@@ -1,0 +1,19 @@
+# Copy to ~/.dbt/profiles.yml (NOT into the repo) and fill in your own dataset name.
+# See docs/gcp_setup.md for the shared-project / per-developer-schema pattern.
+olist_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: ntu-bigdata-project
+      dataset: dbt_dev_YOUR_HANDLE
+      threads: 4
+      location: US
+    prod:
+      type: bigquery
+      method: oauth
+      project: ntu-bigdata-project
+      dataset: olist
+      threads: 4
+      location: US

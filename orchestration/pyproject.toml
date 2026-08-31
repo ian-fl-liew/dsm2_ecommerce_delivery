@@ -1,0 +1,6 @@
+[project]
+name = "olist_orchestration"
+version = "0.1.0"
+
+[tool.dagster]
+module_name = "olist_orchestration.definitions"

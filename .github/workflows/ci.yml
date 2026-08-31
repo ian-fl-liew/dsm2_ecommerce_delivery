@@ -1,0 +1,66 @@
+name: pipeline orchestration
+
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch: {}
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r orchestration/requirements.txt
+      - name: Download Kaggle dataset into data/raw
+        env:
+          KAGGLE_USERNAME: ${{ secrets.KAGGLE_USERNAME }}
+          KAGGLE_KEY: ${{ secrets.KAGGLE_KEY }}
+        run: |
+          pip install kagglehub
+          python -c "
+          import kagglehub, shutil, pathlib
+          src = kagglehub.dataset_download('olistbr/brazilian-ecommerce')
+          dest = pathlib.Path('data/raw')
+          dest.mkdir(parents=True, exist_ok=True)
+          for f in pathlib.Path(src).glob('*.csv'):
+              shutil.copy(f, dest / f.name)
+          "
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - name: Write dlt secrets
+        working-directory: ingestion/.dlt
+        run: |
+          cat <<TOML > secrets.toml
+          [destination.mongodb]
+          connection_url = "${{ secrets.MONGODB_CONNECTION_URL }}"
+
+          [sources.mongodb]
+          connection_url = "${{ secrets.MONGODB_CONNECTION_URL }}"
+          TOML
+      - name: Write dbt profile (submission project only -- no dev target in CI)
+        run: |
+          mkdir -p ~/.dbt
+          cat <<YAML > ~/.dbt/profiles.yml
+          olist_dbt:
+            target: prod
+            outputs:
+              prod:
+                type: bigquery
+                method: oauth
+                project: ${{ secrets.GCP_PROJECT_ID }}
+                dataset: olist
+                threads: 4
+                location: US
+          YAML
+      - name: dbt deps
+        working-directory: warehouse/olist_dbt
+        run: pip install dbt-bigquery && dbt deps
+      - name: "Materialize full asset graph (dlt: CSV -> Mongo -> BigQuery, then dbt build)"
+        working-directory: orchestration
+        run: dagster asset materialize --select "*" -m olist_orchestration.definitions
