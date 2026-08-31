@@ -108,39 +108,48 @@ actual deliverable, and only CI ever writes to it (see "Contributing" below).
    [analysis/README.md](analysis/README.md#running-notebooks-in-vs-code-wsl) for picking the
    right kernel — there's a specific "requires ipykernel" failure mode documented there.
 
-## Contributing: fork → branch → commit → PR → merge
+## Contributing: branch → commit → PR → merge
 
 The repo lives at `ian-fl-liew/dsm2_ecommerce_delivery` on GitHub. `main` is protected (repo
-owner: enable **Settings → Branches → require a pull request before merging**).
+owner: enable **Settings → Branches → require a pull request before merging**). All 5 of us are
+added as **collaborators with Write access** (repo owner: Settings → Collaborators and teams →
+Add people) — that changes the setup step below versus a typical open-source contribution flow.
 
-1. **Fork** the repo on GitHub (top-right **Fork** button) into your own account.
-2. **Clone your fork**, then add the original as `upstream` so you can pull in teammates' merged work:
+**Setup (one-time per teammate):** since you have Write access, just clone the repo directly —
+no fork needed:
+```bash
+git clone https://github.com/ian-fl-liew/dsm2_ecommerce_delivery.git
+cd dsm2_ecommerce_delivery
+```
+(If you'd rather fork anyway — that still
+works: fork on GitHub, clone your fork, `git remote add upstream
+https://github.com/ian-fl-liew/dsm2_ecommerce_delivery.git`, and substitute `upstream` for
+`origin` in the branch/push commands below. Only actually necessary for someone *without* Write
+access.)
+
+1. **Branch per task** off an up-to-date `main`:
    ```bash
-   git clone https://github.com/<your-username>/dsm2_ecommerce_delivery.git
-   cd dsm2_ecommerce_delivery
-   git remote add upstream https://github.com/ian-fl-liew/dsm2_ecommerce_delivery.git
-   ```
-3. **Branch per task** off an up-to-date `main`:
-   ```bash
-   git fetch upstream
-   git checkout -b feature/<short-description> upstream/main   # e.g. feature/dim-seller
+   git checkout main && git pull
+   git checkout -b feature/<short-description>   # e.g. feature/dim-seller
    ```
    Prefix by type: `feature/…`, `fix/…`, `docs/…`.
-4. **Make your changes**, then commit in small, reviewable chunks with imperative-mood messages
+2. **Make your changes**, then commit in small, reviewable chunks with imperative-mood messages
    describing *why*, not just what (e.g. `Add dim_seller to unblock seller performance mart`,
    not `updates`).
-5. **Push to your fork** and open a **Pull Request** into `ian-fl-liew/dsm2_ecommerce_delivery:main`:
+3. **Push your branch** and open a **Pull Request** into `main`:
    ```bash
    git push -u origin feature/<short-description>
    ```
    Fill in what changed and why; link the relevant business question/model if applicable.
-6. **Get at least one teammate's review/approval** before merging — the reviewer should confirm
+4. **Get at least one teammate's review/approval** before merging if you are changing a shared component — the reviewer should confirm
    `dbt build`/`dbt test` pass locally for dbt changes, and that nothing writes to the submission
    project directly (see `docs/gcp_setup.md`).
-7. **Merge** (squash merge, to keep `main`'s history one commit per change) — this is what
+5. **Merge** (squash merge, to keep `main`'s history one commit per change) — this is what
    triggers `.github/workflows/ci.yml` to rebuild the submission project from source.
-8. **Sync back up**: `git checkout main && git pull upstream main && git push origin main`,
-   then delete the merged branch (`git branch -d feature/<short-description>`).
+6. **Sync back up**: `git checkout main && git pull && git branch -d feature/<short-description>`.
+
+**Nobody pushes straight to `main`** — even with Write access, branch protection blocks it;
+every change goes through a PR + review, same as the fork-based flow would require.
 
 ## Team workflow & communication
 
