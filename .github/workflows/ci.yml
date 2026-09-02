@@ -2,9 +2,7 @@ name: pipeline orchestration
 
 
 on:
-  push:
-    branches: [main]
-  workflow_dispatch: {}
+  workflow_dispatch: {}   # manual only -- no prod env, so nothing runs automatically on merge
 
 jobs:
   materialize:
