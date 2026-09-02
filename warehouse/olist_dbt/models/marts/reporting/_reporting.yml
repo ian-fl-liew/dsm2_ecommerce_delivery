@@ -1,0 +1,18 @@
+version: 2
+
+models:
+  - name: mart_delivery_delay_stages
+    columns:
+      - name: stage
+        tests:
+          - not_null
+          - unique
+          - accepted_values:
+              arguments:
+                values:
+                  - approval
+                  - seller_handling
+                  - transit
+      - name: pct_of_delay
+        tests:
+          - not_null
