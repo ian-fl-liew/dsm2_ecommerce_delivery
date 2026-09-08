@@ -45,7 +45,7 @@ base_metrics AS (
     f.delivery_status
   FROM product_items AS pi 
   JOIN {{ ref('fact_orders') }} AS f ON pi.order_id = f.order_id 
-  JOIN {{ ref('stg_products') }} AS p ON pi.product_id = p.product_id 
+  JOIN {{ ref('dim_products') }} AS p ON pi.product_id = p.product_id 
 )
 
 -- Step 3: Aggregate final metrics safely

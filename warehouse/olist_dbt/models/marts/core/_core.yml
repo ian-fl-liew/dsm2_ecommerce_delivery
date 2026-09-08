@@ -15,6 +15,13 @@ models:
           - unique
           - not_null
 
+  - name: dim_products
+    columns:
+      - name: product_id
+        tests:
+          - unique
+          - not_null
+
   - name: fact_orders
     columns:
       - name: order_id
