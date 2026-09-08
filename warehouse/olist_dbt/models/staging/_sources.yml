@@ -12,3 +12,4 @@ sources:
       - name: customers
       - name: products
       - name: product_category_name_translation
+      - name: sellers
