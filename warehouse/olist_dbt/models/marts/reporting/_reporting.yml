@@ -1,6 +1,17 @@
 version: 2
 
 models:
+  - name: mart_seller_perf
+    columns:
+      - name: seller_id
+        tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_seller')
+                field: seller_id
+
   - name: mart_delivery_delay_stages
     columns:
       - name: stage
