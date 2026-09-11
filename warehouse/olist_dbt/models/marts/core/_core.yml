@@ -30,10 +30,26 @@ models:
           - not_null
 
   - name: fact_orders
+    description: >
+      Grain: 1 row per order line item (order_id + order_item_id). Orders with no item
+      rows are preserved with a null order_item_id. Delivery-stage and order-rollup
+      measures are order-level and repeat across the order's items -- filter
+      is_order_header_row before aggregating them.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_id
+              - order_item_id
     columns:
       - name: order_id
         tests:
-          - unique
+          - not_null
+      - name: is_order_header_row
+        description: >
+          True on exactly one row per order. Filtering on it reproduces the old order
+          grain 1:1, which is what every order-level aggregation needs.
+        tests:
           - not_null
       - name: customer_id
         tests:
@@ -42,6 +58,20 @@ models:
               arguments:
                 to: ref('dim_customer')
                 field: customer_id
+      - name: seller_id
+        description: Null only for the 775 orders that carry no item rows.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_seller')
+                field: seller_id
+      - name: product_id
+        description: Null only for the 775 orders that carry no item rows.
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_products')
+                field: product_id
       - name: delivery_status
         tests:
           - accepted_values:

@@ -15,4 +15,7 @@ select
     sum(f.order_revenue) as total_revenue
 from {{ ref('fact_orders') }} as f
 join {{ ref('dim_customer') }} as c on f.customer_id = c.customer_id
+-- fact_orders is item grain; every metric below is order-level, so collapse to one row
+-- per order first. count(*) here is an ORDER count, as the column name promises.
+where f.is_order_header_row
 group by 1, 2
