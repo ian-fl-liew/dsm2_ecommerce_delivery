@@ -83,3 +83,29 @@ models:
                   - M
                   - L
                   - XL
+
+  - name: mart_seller_performance
+    description: >
+      Seller-level performance metrics for Business Question 1.
+      Grain: one row per seller.
+
+    columns:
+      - name: seller_id
+        description: "Unique identifier for the seller."
+        data_tests:
+          - not_null
+          - unique
+
+      - name: late_shipping_pct
+        description: >
+          Percentage of shipped order items handed to the carrier
+          after the seller's shipping limit date.
+          NULL means there were no qualifying shipped items
+          for which this percentage could be calculated.
+
+      - name: late_delivery_pct
+        description: >
+          Percentage of delivered orders involving the seller
+          that were delivered late.
+        data_tests:
+          - not_null
