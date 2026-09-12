@@ -4,10 +4,7 @@ Run after csv_to_mongo_pipeline.py has populated the `olist_landing` MongoDB dat
     python ingestion/pipelines/mongo_to_bigquery_pipeline.py
 
 Uses dlt's MongoDB verified source, vendored into sources/mongodb/ (added via
-`dlt init mongodb bigquery` — verified sources aren't pip-installable, they're copied
-into your own project by the dlt CLI, which is why this lives in-repo rather than as a
-package import). Loads exactly the collections that exist in TABLE_FILES /
-sources/olist_csv_source.py, so stage 1 and stage 2 can't drift out of sync.
+`dlt init mongodb bigquery` 
 """
 import os
 from pathlib import Path

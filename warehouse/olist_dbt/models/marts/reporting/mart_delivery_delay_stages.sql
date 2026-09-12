@@ -12,7 +12,10 @@ WITH delivery_delay_stage AS (
         transit_days,
         delivery_status
     FROM {{ ref('fact_orders') }}
+    -- fact_orders is item grain and the stage metrics are order-level, so
+    -- is_order_header_row collapses to one row per order before the SUMs below.
     WHERE delivery_status LIKE 'late%'
+      AND is_order_header_row
 ),
 
 -- Aggregate all same stage delays into one grand total

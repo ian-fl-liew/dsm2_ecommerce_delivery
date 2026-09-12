@@ -28,6 +28,46 @@ models:
         tests:
           - not_null
 
+  - name: mart_transit_drivers
+    description: >
+      Transit time cut by observable order shape and seller-to-customer distance. Does NOT
+      classify fulfilment type: Olist has no warehouse, carrier or per-item delivery field,
+      so consolidation / direct / dropship are not observable and no such column is exposed.
+      Headline: distance dominates (~4x across distance bands vs ~1.5x across order shapes).
+
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - order_shape
+              - distance_band
+    columns:
+      - name: order_shape
+        description: >
+          Seller count plus handoff speed. A measured property of the order, not a routing
+          or fulfilment-strategy claim.
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - multi_seller
+                  - single_seller_slow_handoff
+                  - single_seller_normal_handoff
+                  - unclassified
+      - name: distance_band
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
+                  - 1. same_city
+                  - 2. same_state
+                  - 3. cross_state
+                  - 4. unknown
+      - name: order_count
+        tests:
+          - not_null
   - name: mart_pdt_delivery
     columns:
       - name: product_category_buckets
