@@ -18,12 +18,9 @@ models:
         tests:
           - not_null
           - unique
-          - accepted_values:
+          - dbt_expectations.expect_column_values_to_be_in_set:
               arguments:
-                values:
-                  - approval
-                  - seller_handling
-                  - transit
+                value_set: ['approval', 'seller_handling', 'transit']
       - name: pct_of_delay
         tests:
           - not_null
@@ -48,26 +45,19 @@ models:
           or fulfilment-strategy claim.
         tests:
           - not_null
-          - accepted_values:
+          - dbt_expectations.expect_column_values_to_be_in_set:
               arguments:
-                values:
-                  - multi_seller
-                  - single_seller_slow_handoff
-                  - single_seller_normal_handoff
-                  - unclassified
+                value_set: ['multi_seller', 'single_seller_slow_handoff', 'single_seller_normal_handoff', 'unclassified']
       - name: distance_band
         tests:
           - not_null
-          - accepted_values:
+          - dbt_expectations.expect_column_values_to_be_in_set:
               arguments:
-                values:
-                  - 1. same_city
-                  - 2. same_state
-                  - 3. cross_state
-                  - 4. unknown
+                value_set: ['1. same_city', '2. same_state', '3. cross_state', '4. unknown']
       - name: order_count
         tests:
           - not_null
+
   - name: mart_pdt_delivery
     columns:
       - name: product_category_buckets
@@ -76,13 +66,9 @@ models:
       - name: product_size_buckets
         tests:
           - not_null
-          - accepted_values:
+          - dbt_expectations.expect_column_values_to_be_in_set:
               arguments:
-                values:
-                  - S
-                  - M
-                  - L
-                  - XL
+                value_set: ['S', 'M', 'L', 'XL']
 
   - name: mart_seller_performance
     description: >
