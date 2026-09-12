@@ -48,6 +48,12 @@ models:
             combination_of_columns:
               - order_id
               - order_item_id
+      - dbt_expectations.expect_column_pair_values_A_to_be_greater_than_B:
+          arguments:
+            column_A: order_delivered_customer_at
+            column_B: order_purchase_at
+            or_equal: false
+            row_condition: "order_delivered_customer_at IS NOT NULL AND order_purchase_at IS NOT NULL"
     columns:
       - name: order_id
         tests:
@@ -81,12 +87,13 @@ models:
                 field: product_id
       - name: delivery_status
         tests:
-          - accepted_values:
+          - dbt_expectations.expect_column_values_to_be_in_set:
               arguments:
-                values:
-                  - early
-                  - on_time
-                  - late_1_3_days
-                  - late_4_7_days
-                  - late_8_plus_days
-                  - not_delivered
+                value_set: ['early', 'on_time', 'late_1_3_days', 'late_4_7_days', 'late_8_plus_days', 'not_delivered']
+      - name: item_freight
+        tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments:
+                min_value: 0
+                max_value: 500
+                row_condition: "item_freight IS NOT NULL"
