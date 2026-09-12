@@ -2,3 +2,4 @@ streamlit>=1.38
 google-cloud-bigquery>=3.25
 db-dtypes
 pandas
+plotly
