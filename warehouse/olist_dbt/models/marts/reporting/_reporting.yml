@@ -56,12 +56,6 @@ models:
                   - single_seller_normal_handoff
                   - unclassified
       - name: distance_band
-  - name: mart_pdt_delivery
-    columns:
-      - name: product_category_buckets
-        tests:
-          - not_null
-      - name: product_size_buckets
         tests:
           - not_null
           - accepted_values:
@@ -74,6 +68,17 @@ models:
       - name: order_count
         tests:
           - not_null
+  - name: mart_pdt_delivery
+    columns:
+      - name: product_category_buckets
+        tests:
+          - not_null
+      - name: product_size_buckets
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values:
                   - S
                   - M
                   - L
