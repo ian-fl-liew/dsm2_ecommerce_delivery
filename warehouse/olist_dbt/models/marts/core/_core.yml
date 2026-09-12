@@ -29,6 +29,13 @@ models:
           - unique
           - not_null
 
+  - name: dim_geolocation
+    columns:
+      - name: zip_code_prefix
+        tests:
+          - unique
+          - not_null
+
   - name: fact_orders
     description: >
       Grain: 1 row per order line item (order_id + order_item_id). Orders with no item
