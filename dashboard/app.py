@@ -899,7 +899,7 @@ with tab5:
             "avg_transit_days": "Avg transit days",
             "order_shape_label": "Order shape"
         },
-        title="Average transit time by fulfillment shape, within each distance band"
+        title="Average transit time by order shape, within each distance band"
     )
     fig_transit.update_layout(height=480)
 
