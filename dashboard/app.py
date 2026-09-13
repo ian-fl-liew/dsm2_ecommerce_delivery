@@ -841,6 +841,8 @@ with tab5:
     """)
 
     transit_drivers = transit_drivers[transit_drivers["distance_band"] != "4. unknown"]
+    # Unclassified bars rest on ~14 delivered orders; shown in the expander below instead.
+    transit_drivers = transit_drivers[transit_drivers["order_shape"] != "unclassified"]
 
     distance_order = ["1. same_city", "2. same_state", "3. cross_state"]
     distance_labels = {
@@ -931,4 +933,102 @@ with tab5:
     st.caption(
         "Order volume (% of all orders), slow seller handoff could be one of the underlying issue for delivery transits."
     )
+
+    # --------------------------------------------------------
+    # LATE % BY ORDER SHAPE
+    # --------------------------------------------------------
+
+    fig_late = px.bar(
+        transit_drivers,
+        x="distance_band_label",
+        y="late_pct_display",
+        color="order_shape_label",
+        barmode="group",
+        color_discrete_map=shape_color_map,
+        text=transit_drivers["late_pct_display"].round(1).astype(str) + "%",
+        labels={
+            "distance_band_label": "Distance band",
+            "late_pct_display": "Late %",
+            "order_shape_label": "Order shape"
+        },
+        title="Late % by order shape, within each distance band"
+    )
+    fig_late.update_traces(textposition="outside")
+    fig_late.update_layout(height=480)
+
+    st.plotly_chart(fig_late, use_container_width=True)
+
+    st.caption(
+        "Late % = share of delivered orders that arrived after the estimated delivery date "
+        "Olist showed the customer at purchase. Undelivered orders are excluded. Slow "
+        "handoff barely changes transit time above, but it multiplies the late rate: the "
+        "delay happens before the parcel reaches the carrier."
+    )
+
+    # --------------------------------------------------------
+    # UNCLASSIFIED ORDERS
+    # --------------------------------------------------------
+
+    with st.expander("View unclassified orders (excluded from the charts above)"):
+        unclassified = query(f"""
+            SELECT
+                distance_band,
+                unclassified_reason,
+                order_status,
+                order_count,
+                delivered_order_count,
+                avg_transit_days
+            FROM `{REPORTING_DATASET}.mart_transit_unclassified`
+        """)
+
+        reason_labels = {
+            "no_items_on_order": "No items on order",
+            "never_approved_or_shipped": "Never approved or shipped",
+            "approval_timestamp_missing": "Approval timestamp missing",
+            "never_handed_to_carrier": "Never handed to carrier"
+        }
+        all_distance_labels = {**distance_labels, "4. unknown": "Unknown (no seller)"}
+
+        total_unclassified = int(unclassified["order_count"].sum())
+        total_delivered = int(unclassified["delivered_order_count"].sum())
+
+        st.markdown(
+            f"**{total_unclassified:,} orders** could not be classified because no seller "
+            f"handoff could be measured. Only **{total_delivered:,}** of them were delivered "
+            f"with a transit time, which is too few to plot alongside the other segments."
+        )
+
+        by_reason = (
+            unclassified.groupby("unclassified_reason", as_index=False)[
+                ["order_count", "delivered_order_count"]
+            ].sum()
+            .sort_values("order_count", ascending=False)
+        )
+        by_reason["unclassified_reason"] = by_reason["unclassified_reason"].map(reason_labels)
+        st.dataframe(
+            by_reason.rename(columns={
+                "unclassified_reason": "Reason",
+                "order_count": "Orders",
+                "delivered_order_count": "Delivered (has transit time)"
+            }),
+            hide_index=True,
+            use_container_width=True
+        )
+
+        detail = unclassified.copy()
+        detail["distance_band"] = detail["distance_band"].map(all_distance_labels)
+        detail["unclassified_reason"] = detail["unclassified_reason"].map(reason_labels)
+        detail["avg_transit_days"] = detail["avg_transit_days"].round(1)
+        st.dataframe(
+            detail.rename(columns={
+                "distance_band": "Distance band",
+                "unclassified_reason": "Reason",
+                "order_status": "Order status",
+                "order_count": "Orders",
+                "delivered_order_count": "Delivered",
+                "avg_transit_days": "Avg transit days"
+            }),
+            hide_index=True,
+            use_container_width=True
+        )
     

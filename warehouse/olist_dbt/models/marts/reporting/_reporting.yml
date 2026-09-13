@@ -58,6 +58,28 @@ models:
         tests:
           - not_null
 
+  - name: mart_transit_unclassified
+    description: >
+      Why orders are unclassified in mart_transit_drivers, by distance band, reason and
+      order status.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns:
+              - distance_band
+              - unclassified_reason
+              - order_status
+    columns:
+      - name: unclassified_reason
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_in_set:
+              arguments:
+                value_set: ['no_items_on_order', 'never_approved_or_shipped', 'approval_timestamp_missing', 'never_handed_to_carrier']
+      - name: order_count
+        tests:
+          - not_null
+
   - name: mart_pdt_delivery
     columns:
       - name: product_category_buckets
